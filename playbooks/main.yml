@@ -1,0 +1,57 @@
+---
+- hosts: hosts
+  gather_facts: false
+  tasks:
+  - name: Ensure Chocolatey itself is installed, using community repo for the bootstrap (https://community.chocolatey.org/packages)
+    win_chocolatey:
+      name: chocolatey
+
+  - name: Ensure that choco is in path (should be unnecessary on later Ansible versions)
+    win_path:
+      elements:
+        - 'C:\ProgramData\chocolatey\bin'
+
+  - name: Install filezilla server
+    win_chocolatey:
+      name: filezilla.server
+
+  - name: Install 7zip
+    win_chocolatey:
+      name: 7zip #or 7zip-zstd
+
+  - name: Install .NET
+    win_chocolatey:
+      name: dotnet
+  
+  - name: Download CoreFTP
+    ansible.windows.win_powershell:
+      script: |
+        Invoke-WebRequest -Method GET -uri http://www.coreftp.com/server/download/CoreFTPServer64.exe -OutFile "CoreFTPServer64.exe" 
+
+  - name: Download MSI Package
+    ansible.windows.win_powershell:
+      script: |
+        Invoke-WebRequest -Method GET -uri https://github.com/microsoft/winget-cli/releases/download/v1.3.2691/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile "C:\Users\Administrator\DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+
+  - name: Install MSI Package
+    ansible.windows.win_powershell:
+      script: |
+        add-appxpackage -Path ".\DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+
+  - name: Install NET-Framework-Core
+    ansible.windows.win_feature:
+      name: NET-Framework-Core
+      source: C:\Temp\iso\sources\sxs
+      state: present
+
+  - name: Download Microsoft .NET SDK
+    win_get_url:
+      url: https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.101-windows-x64-installer
+      dest: C:\tmp\dotnet-sdk-7.0.101-win-x64.exe
+
+  - name: Run Microsoft .NET SDK Installer
+    raw: C:\tmp\dotnet-sdk-7.0.101-win-x64.exe /q /norestart /log C:\tmp\dotnet\dotnet461\log.txt /x86 /x64 /redist
+
+  - name: Reboot as required by Microsoft .NET SDK
+    win_reboot:
+
