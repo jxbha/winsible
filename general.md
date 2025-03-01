@@ -106,18 +106,19 @@ powershell.exe -ExecutionPolicy ByPass -File $file (-DisableBasicAuth) (-SkipNet
 #Windows 2016
 Windows:
  1.
-     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-     (get-ChildItem Cert:\LocalMachine\My).Thumbprint
-     winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname=”<your_server_dns_name_or_whatever_you_like>”; CertificateThumbprint=”<certificate_from_prev_cmd>”}
-
-
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname=”<your_server_dns_name_or_whatever_you_like>”; CertificateThumbprint=”<certificate_from_prev_cmd>”}
-
-$thumbprint=(get-ChildItem Cert:\LocalMachine\My).Thumbprint
-0705EF813F026C964466A137F4B7851800C70FFD
-
-$pcname=$env:ComputerName
-JXWINC
-winrm create winrm/config/Listener?Address=*+Transport-HTTPS @{Hostname="$pcname"; CertificateThumbprint="$thumbprint"}
+ 
+       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       (get-ChildItem Cert:\LocalMachine\My).Thumbprint
+       winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname=”<your_server_dns_name_or_whatever_you_like>”; CertificateThumbprint=”<certificate_from_prev_cmd>”}
+      
+      
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname=”<your_server_dns_name_or_whatever_you_like>”; CertificateThumbprint=”<certificate_from_prev_cmd>”}
+      
+      $thumbprint=(get-ChildItem Cert:\LocalMachine\My).Thumbprint
+      0705EF813F026C964466A137F4B7851800C70FFD
+      
+      $pcname=$env:ComputerName
+      JXWINC
+      winrm create winrm/config/Listener?Address=*+Transport-HTTPS @{Hostname="$pcname"; CertificateThumbprint="$thumbprint"}
 
